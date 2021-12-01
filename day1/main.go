@@ -15,7 +15,22 @@ func task1(depths []int) (increasingdepths int) {
 	return increasingdepths
 }
 
+
 func task2(depths []int) (increasingdepths int) {
+	lastsum := depths[2]+depths[1]+depths[0]
+
+	for i := 3; i < len(depths); i++ {
+		current := depths[i]+depths[i-1]+depths[i-2]
+		if current > lastsum {
+			increasingdepths++
+			lastsum=current
+		}
+	}
+	return increasingdepths
+}
+
+
+func task2_dumbo(depths []int) (increasingdepths int) {
 	var (
 		sum1, sum2, sum3                                  int = -1, -1, -1
 		slidingcounter1, slidingcounter2, slidingcounter3 int = 0, -1, -2
@@ -63,6 +78,8 @@ func task2(depths []int) (increasingdepths int) {
 	}
 	return increasingdepths
 }
+
+
 
 func main() {
 	input := "input.txt"
