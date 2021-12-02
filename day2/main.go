@@ -3,53 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
-	"strings"
 )
 
-func navigate1(command string, hpos, depth int) (int, int) {
-	segments := strings.Split(command, " ")
-	if len(segments) != 2 {
-		log.Fatalf("Malformed command '%s'", command)
-	}
-	lit := segments[0]
-	arg, err := strconv.Atoi(segments[1])
-	if err != nil {
-		log.Fatalf("Unknown argument in command '%s': %v", command, err)
-	}
-
-	switch lit {
-	case "up":
-		depth -= arg
-	case "down":
-		depth += arg
-	case "forward":
-		hpos += arg
-	default:
-		log.Printf("Unknown command '%s'", command)
-
-	}
-	return hpos, depth
-}
-
-func task1(commands []string) int {
-	var hpos, depth int
-	for _, command := range commands {
-		hpos, depth = navigate1(command, hpos, depth)
-	}
-	return hpos * depth
-}
-
-func navigate2(command string, hpos, depth, aim int) (int, int, int) {
-	segments := strings.Split(command, " ")
-	if len(segments) != 2 {
-		log.Fatalf("Malformed command '%s'", command)
-	}
-	lit := segments[0]
-	arg, err := strconv.Atoi(segments[1])
-	if err != nil {
-		log.Fatalf("Unknown argument in command '%s': %v", command, err)
-	}
+func navigate(command string, hpos, depth, aim int) (int, int, int) {
+	lit, arg := splitCommand(command)
 
 	switch lit {
 	case "up":
@@ -58,20 +15,26 @@ func navigate2(command string, hpos, depth, aim int) (int, int, int) {
 		aim += arg
 	case "forward":
 		hpos += arg
-		depth += (aim * arg)
+		depth += (arg * aim)
 	default:
 		log.Printf("Unknown command '%s'", command)
-
 	}
 	return hpos, depth, aim
+}
+
+func task1(commands []string) int {
+	var hpos, aim int
+	for _, command := range commands {
+		hpos, _, aim = navigate(command, hpos, 1, aim)
+	}
+	return hpos * aim
 }
 
 func task2(commands []string) int {
 	var hpos, depth, aim int
 	for _, command := range commands {
-		hpos, depth, aim = navigate2(command, hpos, depth, aim)
+		hpos, depth, aim = navigate(command, hpos, depth, aim)
 	}
-	log.Printf("hpos: %d, depth: %d, aim: %d", hpos, depth, aim)
 	return hpos * depth
 }
 

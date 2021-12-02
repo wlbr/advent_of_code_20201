@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func readdata(input string) (commands []string) {
@@ -25,4 +27,17 @@ func readdata(input string) (commands []string) {
 		fmt.Fprintln(os.Stderr, "reading standard input:", err)
 	}
 	return commands
+}
+
+func splitCommand(command string) (string, int) {
+	segments := strings.Split(command, " ")
+	if len(segments) != 2 {
+		log.Fatalf("Malformed command '%s'", command)
+	}
+	lit := segments[0]
+	arg, err := strconv.Atoi(segments[1])
+	if err != nil {
+		log.Fatalf("Unknown argument in command '%s': %v", command, err)
+	}
+	return lit, arg
 }
