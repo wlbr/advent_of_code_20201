@@ -1,69 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"math"
-	"os"
 	"strconv"
 )
-
-func gamma(bin []string) int {
-	commons := ""
-	wordlength := len(bin[0])
-	//words := len(bin)
-	for i := 0; i < wordlength; i++ {
-		var (
-			count0, count1 int = 0, 0
-		)
-		for _, w := range bin {
-			switch w[i] {
-			case '0':
-				count0++
-			default:
-				count1++
-			}
-		}
-		if count0 > count1 {
-			commons += "0"
-		} else {
-			commons += "1"
-		}
-	}
-	gamma, _ := strconv.ParseInt(commons, 2, 64)
-	return int(gamma)
-}
-
-func epsilon(bin []string) int {
-	xormask := int(math.Pow(float64(2), float64(len(bin[0])))) - 1
-	return xormask ^ gamma(bin)
-}
-
-func epsilon2(bin []string) int {
-	commons := ""
-	wordlength := len(bin[0])
-	for i := 0; i < wordlength; i++ {
-		var (
-			count0, count1 int = 0, 0
-		)
-		for _, w := range bin {
-			switch w[i] {
-			case '0':
-				count0++
-			default:
-				count1++
-			}
-		}
-		if count0 < count1 {
-			commons += "0"
-		} else {
-			commons += "1"
-		}
-	}
-	gamma, _ := strconv.ParseInt(commons, 2, 64)
-	return int(gamma)
-}
 
 func mostCommon(binaries []string, pos int) string {
 	var (
@@ -85,18 +27,7 @@ func mostCommon(binaries []string, pos int) string {
 }
 
 func leastCommon(binaries []string, pos int) string {
-	var (
-		count0, count1 int = 0, 0
-	)
-	for _, w := range binaries {
-		switch w[pos] {
-		case '0':
-			count0++
-		default:
-			count1++
-		}
-	}
-	if count0 <= count1 {
+	if mostCommon(binaries, pos) == "1" {
 		return "0"
 	} else {
 		return "1"
@@ -112,16 +43,19 @@ func filter(binaries []string, bit int, criteria byte) (fitting []string) {
 	return fitting
 }
 
-func selectOne(binaries []string, criteria byte) string {
-	set := binaries
-	for i := 0; i < len(binaries[0]); i++ {
-		set = filter(set, i, criteria)
-		if len(set) == 1 {
-			return set[0]
-		}
+func gamma(bin []string) int {
+	commons := ""
+	wordlength := len(bin[0])
+	for i := 0; i < wordlength; i++ {
+		commons += mostCommon(bin, i)
 	}
-	log.Fatal("no solution found.")
-	return ""
+	gamma, _ := strconv.ParseInt(commons, 2, 64)
+	return int(gamma)
+}
+
+func epsilon(bin []string) int {
+	xormask := int(math.Pow(float64(2), float64(len(bin[0])))) - 1
+	return xormask ^ gamma(bin)
 }
 
 func oxygengenerator(binaries []string) (result int) {
@@ -162,25 +96,6 @@ func task2(binaries []string) (result int) {
 	oxy := oxygengenerator(binaries)
 	co2 := co2scrubber(binaries)
 	return oxy * co2
-}
-
-func readdata(input string) (binaries []string) {
-	f, err := os.Open(input)
-	if err != nil {
-		log.Fatalf("Error opening dataset '%s':  %s", input, err)
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		binaries = append(binaries, line)
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "reading standard input:", err)
-	}
-	return binaries
 }
 
 func main() {
