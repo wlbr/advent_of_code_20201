@@ -102,6 +102,6 @@ func main() {
 	input := "input.txt"
 
 	ids := readdata(input)
-	fmt.Println("Task 1 - # increasing depths   =  ", task1(ids))
-	fmt.Println("Task 1 - # sliding inc. depths =  ", task2(ids))
+	fmt.Println("Task 1 - Power consumption   =  ", task1(ids))
+	fmt.Println("Task 1 - Life support rating =  ", task2(ids))
 }
