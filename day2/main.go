@@ -42,6 +42,6 @@ func main() {
 	input := "input.txt"
 
 	ids := readdata(input)
-	fmt.Println("Task 1 - # increasing depths   =  ", task1(ids))
-	fmt.Println("Task 1 - # sliding inc. depths =  ", task2(ids))
+	fmt.Println("Task 1 - Product hpos x depth        =  ", task1(ids))
+	fmt.Println("Task 1 - Final product hpos x depth  =  ", task2(ids))
 }

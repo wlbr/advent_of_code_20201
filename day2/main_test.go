@@ -15,8 +15,8 @@ var testset []*testdata = []*testdata{{"example.txt", 150, 900}}
 func TestTaskOne(t *testing.T) {
 
 	for _, test := range testset {
-		ids := readdata(test.fname)
-		r := task1(ids)
+		input := readdata(test.fname)
+		r := task1(input)
 		if r != test.expectedtask1 {
 			t.Fatalf("Test '%s' failed. Got '%d' -  Wanted: '%d'", test.fname, r, test.expectedtask1)
 		}
@@ -25,8 +25,8 @@ func TestTaskOne(t *testing.T) {
 
 func TestTaskTwo(t *testing.T) {
 	for _, test := range testset {
-		ids := readdata(test.fname)
-		r := task2(ids)
+		input := readdata(test.fname)
+		r := task2(input)
 		if r != test.expectedtask2 {
 			t.Fatalf("Test '%s' failed. Got '%d' -  Wanted: '%d'", test.fname, r, test.expectedtask2)
 		}
