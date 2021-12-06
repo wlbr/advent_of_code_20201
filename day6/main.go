@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
+	"math/big"
 )
 
 type basket struct {
 	age    int
-	number int
+	number *big.Int
 }
 
-func countFish(baskets []*basket) int {
-	var count int
+func countFish(baskets []*basket) *big.Int {
+	var count *big.Int
 	for _, b := range baskets {
-		count += b.number
+		count = count.Add(count, b.number)
 	}
 	return count
 }
@@ -20,25 +21,25 @@ func countFish(baskets []*basket) int {
 func age(baskets []*basket) []*basket {
 	var NewBaskets []*basket
 	for a := 0; a < len(baskets); a++ {
-		NewBaskets = append(NewBaskets, &basket{age: a, number: 0})
+		NewBaskets = append(NewBaskets, &basket{age: a, number: big.NewInt(0)})
 	}
 	for i := len(baskets) - 2; i >= 0; i-- {
 		NewBaskets[i].number = baskets[i+1].number
 		if i == 0 {
 			NewBaskets[len(baskets)-1].number = baskets[0].number
-			NewBaskets[6].number += baskets[0].number
+			NewBaskets[6].number = NewBaskets[6].number.Add(NewBaskets[6].number, baskets[0].number)
 		}
 	}
 	return NewBaskets
 }
 
-func task1and2(fishes []int, days int) (result int) {
+func task1and2(fishes []int, days int) (result *big.Int) {
 	baskets := make([]*basket, 9)
 	for a := 0; a < len(baskets); a++ {
-		baskets[a] = &basket{age: a, number: 0}
+		baskets[a] = &basket{age: a, number: big.NewInt(0)}
 	}
 	for _, f := range fishes {
-		baskets[f].number++
+		baskets[f].number = baskets[f].number.Add(baskets[f].number, big.NewInt(1))
 	}
 	for day := 0; day < days; day++ {
 		baskets = age(baskets)
