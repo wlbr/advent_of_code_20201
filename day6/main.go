@@ -11,7 +11,8 @@ type basket struct {
 }
 
 func countFish(baskets []*basket) *big.Int {
-	var count *big.Int
+	count := big.NewInt(0)
+
 	for _, b := range baskets {
 		count = count.Add(count, b.number)
 	}
@@ -19,17 +20,8 @@ func countFish(baskets []*basket) *big.Int {
 }
 
 func age(baskets []*basket) []*basket {
-	var NewBaskets []*basket
-	for a := 0; a < len(baskets); a++ {
-		NewBaskets = append(NewBaskets, &basket{age: a, number: big.NewInt(0)})
-	}
-	for i := len(baskets) - 2; i >= 0; i-- {
-		NewBaskets[i].number = baskets[i+1].number
-		if i == 0 {
-			NewBaskets[len(baskets)-1].number = baskets[0].number
-			NewBaskets[6].number = NewBaskets[6].number.Add(NewBaskets[6].number, baskets[0].number)
-		}
-	}
+	NewBaskets := append(baskets[1:], baskets[0])
+	NewBaskets[6].number = NewBaskets[6].number.Add(NewBaskets[6].number, NewBaskets[len(NewBaskets)-1].number)
 	return NewBaskets
 }
 
