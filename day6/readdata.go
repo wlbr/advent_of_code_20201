@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func readdata(input string) (fishes []*Fish) {
+func readdata(input string) (fishes []int) {
 	f, err := os.Open(input)
 	if err != nil {
 		log.Fatalf("Error opening dataset '%s':  %s", input, err)
@@ -33,7 +33,7 @@ func readdata(input string) (fishes []*Fish) {
 			if err != nil {
 				log.Fatalf("Error converting '%s' to int:  %s", num, err)
 			}
-			fishes = append(fishes, NewFish(n))
+			fishes = append(fishes, n)
 		}
 	}
 	return fishes
