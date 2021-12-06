@@ -15,9 +15,9 @@ func countFish(buckets []*Int) *Int {
 }
 
 func age(buckets []*Int) []*Int {
-	Newbuckets := append(buckets[1:], buckets[0])
-	Newbuckets[6] = Newbuckets[6].Add(Newbuckets[6], Newbuckets[len(Newbuckets)-1])
-	return Newbuckets
+	newbuckets := append(buckets[1:], buckets[0])
+	newbuckets[6] = newbuckets[6].Add(newbuckets[6], newbuckets[len(newbuckets)-1])
+	return newbuckets
 }
 
 func task1and2(fishes []int, days int) (result *Int) {
