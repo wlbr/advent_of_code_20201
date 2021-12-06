@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"math/big"
 	. "math/big"
 )
 
 func countFish(buckets []*Int) *Int {
-	count := big.NewInt(0)
+	count := NewInt(0)
 
 	for _, b := range buckets {
 		count = count.Add(count, b)
@@ -27,7 +26,7 @@ func task1and2(fishes []int, days int) (result *Int) {
 		buckets[a] = NewInt(0)
 	}
 	for _, f := range fishes {
-		buckets[f] = buckets[f].Add(buckets[f], big.NewInt(1))
+		buckets[f] = buckets[f].Add(buckets[f], NewInt(1))
 	}
 	for day := 0; day < days; day++ {
 		buckets = age(buckets)
