@@ -2,22 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
-const MaxUint = ^uint(0)
-const MinUint = 0
-const MaxInt = int(MaxUint >> 1)
-const MinInt = -MaxInt - 1
-
-func Min(v ...int) int {
-	m := v[0]
-	for _, e := range v {
-		if e < m {
-			m = e
-		}
-	}
-	return m
-}
+const MaxInt = int(^uint(0) >> 1)
 
 func MinMax(v ...int) (min, max int) {
 	max = v[0]
@@ -33,69 +21,34 @@ func MinMax(v ...int) (min, max int) {
 	return min, max
 }
 
-func Abs(x int) int {
-	if x < 0 {
-		return -x
+func Move(current, target int, progressive bool) int {
+	distance := int(math.Abs(float64(current - target)))
+	if !progressive { // task1
+		return distance
 	}
-	return x
-}
-
-func Move(current, target int) int {
-	return Abs(current - target)
-}
-
-func Costs(positions []int, target int) int {
-	count := 0
-
-	for _, current := range positions {
-		count += Move(current, target)
-	}
-	return count
-}
-
-func Cheapest(positions []int) (target, cost int) {
-	min, max := MinMax(positions...)
-	fmt.Printf("%v - Min %d Max %d \n", positions, min, max)
-	cost = MaxInt
-
-	for i := min; i < max; i++ {
-		c := Costs(positions, i)
-		if c < cost {
-			target = i
-			cost = c
-		}
-	}
-
-	return target, cost
-}
-
-func ProgressiveMove(current, target int) int {
-	distance := Abs(current - target)
-	c := 0
-
+	c := 0 // task2
 	for i := 1; i <= distance; i++ {
 		c += i
 	}
 	return c
 }
 
-func ProgressiveCosts(positions []int, target int) int {
+func Costs(crabs []int, target int, progressive bool) int {
 	count := 0
 
-	for _, current := range positions {
-		count += ProgressiveMove(current, target)
+	for _, current := range crabs {
+		count += Move(current, target, progressive)
 	}
 	return count
 }
 
-func Cheapest2(positions []int) (target, cost int) {
-	min, max := MinMax(positions...)
-	fmt.Printf("%v - Min %d Max %d \n", positions, min, max)
+func Cheapest(crabs []int, progressive bool) (target, cost int) {
+	min, max := MinMax(crabs...)
+	fmt.Printf("%v - Min %d Max %d \n", crabs, min, max)
 	cost = MaxInt
 
 	for i := min; i < max; i++ {
-		c := ProgressiveCosts(positions, i)
-		fmt.Printf("target: %d   costs: %d\n", i, c)
+		c := Costs(crabs, i, progressive)
 		if c < cost {
 			target = i
 			cost = c
@@ -104,22 +57,22 @@ func Cheapest2(positions []int) (target, cost int) {
 	return target, cost
 }
 
-func task1(positions []int) (target, cost int) {
-	return Cheapest(positions)
+func task1(crabs []int) (target, cost int) {
+	return Cheapest(crabs, false)
 }
 
-func task2(positions []int) (target, cost int) {
-	return Cheapest2(positions)
+func task2(crabs []int) (target, cost int) {
+	return Cheapest(crabs, true)
 }
 
 func main() {
 	input := "input.txt"
 
-	fishes := readdata(input)
+	crabpositions := readdata(input)
 
-	target, cost := task1(fishes)
+	target, cost := task1(crabpositions)
 	fmt.Printf("Task 1 - # cheapest position is %d costing %d fuel \n", target, cost)
-	target, cost = task2(fishes)
-	fmt.Printf("Task 1 - # cheapest position is %d costing %d fuel \n", target, cost)
+	target, cost = task2(crabpositions)
+	fmt.Printf("Task 2 - # cheapest position is %d costing %d fuel \n", target, cost)
 
 }
