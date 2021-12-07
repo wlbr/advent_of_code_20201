@@ -1,6 +1,6 @@
 # advent_of_code_2020
 
-See https://adventofcode.com/
+See https://adventofcode.com/2021
 
 My stats: https://adventofcode.com/2021/leaderboard/self
 
