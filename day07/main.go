@@ -26,11 +26,7 @@ func Move(current, target int, progressive bool) int {
 	if !progressive { // task1
 		return distance
 	}
-	c := 0 // task2
-	for i := 1; i <= distance; i++ {
-		c += i
-	}
-	return c
+	return (distance * (distance + 1)) / 2
 }
 
 func Costs(crabs []int, target int, progressive bool) int {
@@ -44,7 +40,6 @@ func Costs(crabs []int, target int, progressive bool) int {
 
 func Cheapest(crabs []int, progressive bool) (target, cost int) {
 	min, max := MinMax(crabs...)
-	fmt.Printf("%v - Min %d Max %d \n", crabs, min, max)
 	cost = MaxInt
 
 	for i := min; i < max; i++ {
