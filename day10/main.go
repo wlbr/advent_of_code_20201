@@ -121,8 +121,10 @@ func main() {
 
 	data := readdata(input)
 	start := time.Now()
-	fmt.Printf("Task 1 - elapsed Time: %s - Syntax error score       = %d \n", time.Since(start), task1(data))
+	result := task1(data)
+	fmt.Printf("Task 1 - elapsed Time: %s - Syntax error score       = %d \n", time.Since(start), result)
 
 	start = time.Now()
-	fmt.Printf("Task 2 - elapsed Time: %s - Mid of completion scores = %d \n", time.Since(start), task2(data))
+	result = task2(data)
+	fmt.Printf("Task 2 - elapsed Time: %s - Mid of completion scores = %d \n", time.Since(start), result)
 }
