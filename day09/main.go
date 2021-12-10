@@ -186,8 +186,10 @@ func main() {
 
 	heights := readdata(input)
 	start := time.Now()
-	fmt.Printf("Task 1 - elapsed Time: %s - Sum of risk levels     = %d \n", time.Since(start), task1(heights))
+	result := task1(heights)
+	fmt.Printf("Task 1 - elapsed Time: %s - Sum of risk levels     = %d \n", time.Since(start), result)
 
 	start = time.Now()
-	fmt.Printf("Task 2 - elapsed Time: %s - Products of basinsizes = %d \n", time.Since(start), task2(heights))
+	result = task2(heights)
+	fmt.Printf("Task 2 - elapsed Time: %s - Products of basinsizes = %d \n", time.Since(start), result)
 }
