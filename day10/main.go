@@ -17,7 +17,6 @@ func isValid(line string) (int, lastsign rune, mem *stack) {
 		if strings.Contains(opening, string(c)) {
 			mem.push(c)
 		} else if i := strings.Index(closing, string(c)); i >= 0 {
-
 			sp := mem.pop()
 			if sp != opening[i] {
 				return 1, c, mem
@@ -49,26 +48,14 @@ func score(corruptingrunes []rune) int {
 }
 
 func task1(alllines []string) (result int) {
-	var corruptlines, validlines, incompletelines []string
-	var corruptids, validids, incompleteids []int
 	var corruptingrunes []rune
 
-	for p, l := range alllines {
+	for _, l := range alllines {
 		v, r, _ := isValid(l)
-		switch v {
-		case 0:
-			validlines = append(validlines, l)
-			validids = append(validids, p)
-		case 1:
-			corruptlines = append(corruptlines, l)
-			corruptids = append(corruptids, p)
+		if v == 1 {
 			corruptingrunes = append(corruptingrunes, r)
-		case -1:
-			incompletelines = append(incompletelines, l)
-			incompleteids = append(incompleteids, p)
 		}
 	}
-
 	return score(corruptingrunes)
 }
 
@@ -97,40 +84,35 @@ func score2(missinglineclosings []string) int {
 	return scores[len(scores)/2]
 }
 
-func task2(alllines []string) int {
-	var corruptlines, validlines, incompletelines []string
-	var corruptids, validids, incompleteids []int
+func complete(in string) (out string) {
+	for _, c := range in {
+		if c == '(' {
+			out = ")" + out
+		} else if c == '[' {
+			out = "]" + out
+		} else if c == '{' {
+			out = "}" + out
+		} else if c == '<' {
+			out = ">" + out
+		}
+	}
+	return out
+}
 
+func task2(alllines []string) int {
 	var missingopenings []string
-	for p, l := range alllines {
+	for _, l := range alllines {
 		v, _, m := isValid(l)
-		switch v {
-		case 0:
-			validlines = append(validlines, l)
-			validids = append(validids, p)
-		case 1:
-			corruptlines = append(corruptlines, l)
-			corruptids = append(corruptids, p)
-		case -1:
-			incompletelines = append(incompletelines, l)
-			incompleteids = append(incompleteids, p)
+		if v == -1 {
 			missingopenings = append(missingopenings, m.content)
 		}
 	}
-	reverse := map[rune]rune{
-		'(': ')',
-		'[': ']',
-		'{': '}',
-		'<': '>',
-	}
+
 	missingclosings := []string{}
 	for _, mops := range missingopenings {
-		rops := ""
-		for _, m := range mops {
-			rops = string(reverse[m]) + rops
-		}
-		missingclosings = append(missingclosings, rops)
+		missingclosings = append(missingclosings, complete(mops))
 	}
+
 	return score2(missingclosings)
 }
 
