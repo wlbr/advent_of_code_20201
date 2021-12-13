@@ -35,6 +35,19 @@ func newPlan(start, end *node) *plan {
 	return &plan{node: make(map[string]*node)}
 }
 
+func printAllPaths(paths [][]*node) {
+	for _, p := range paths {
+		for i, sp := range p {
+			fmt.Printf("%s", sp.name)
+			if i < len(p)-1 {
+				fmt.Print(",")
+			} else {
+				fmt.Println()
+			}
+		}
+	}
+}
+
 func (p *plan) add(name string) *node {
 	if n, ok := p.node[name]; ok {
 		return n
@@ -94,19 +107,6 @@ func (p *plan) travel(paths [][]*node, currentpath []*node, startnode *node, can
 	return paths
 }
 
-func printAllPaths(paths [][]*node) {
-	for _, p := range paths {
-		for i, sp := range p {
-			fmt.Printf("%s", sp.name)
-			if i < len(p)-1 {
-				fmt.Print(",")
-			} else {
-				fmt.Println()
-			}
-		}
-	}
-}
-
 func task1(plan *plan) (result int) {
 	var paths [][]*node
 	paths = plan.travel(paths, nil, plan.start, canVisit1, false)
@@ -121,6 +121,24 @@ func task2(plan *plan) (result int) {
 	return len(paths)
 }
 
+func task3(plan *plan) (result int) {
+
+	results := make(chan int, len(plan.start.connections))
+
+	for _, c := range plan.start.connections {
+		go func(res chan int, start *node) {
+			res <- len(plan.travel(nil, []*node{plan.start}, start, canVisit2, false))
+		}(results, c)
+	}
+
+	for i := 0; i < len(plan.start.connections); i++ {
+		result += <-results
+	}
+
+	close(results)
+	return result
+}
+
 func main() {
 	input := "input.txt"
 
@@ -128,11 +146,16 @@ func main() {
 
 	start := time.Now()
 	result := task1(data)
-	fmt.Printf("Task 1 - elapsed Time: %s - # Paths \t = %d \n", time.Since(start), result)
+	fmt.Printf("Task 1 - elapsed Time: %s - # Paths\t\t\t= %d \n", time.Since(start), result)
 
 	start = time.Now()
 	result = task2(data)
 
-	fmt.Printf("Task 2 - elapsed Time: %s - # Paths \t = %d \n", time.Since(start), result)
+	fmt.Printf("Task 2 - elapsed Time: %s - # Paths\t\t\t= %d \n", time.Since(start), result)
+
+	start = time.Now()
+	result = task3(data)
+
+	fmt.Printf("Task 3 - elapsed Time: %s - # Paths in parallel\t= %d \n", time.Since(start), result)
 
 }
