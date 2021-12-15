@@ -2,77 +2,88 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"time"
 )
 
-type node struct {
-	next    *node
-	polymer rune
-}
-
-func (n *node) walk(visitor func(rune)) {
-	for n != nil {
-		visitor(n.polymer)
-		n = n.next
-	}
-}
-
-func (n *node) String() string {
-	var s string
-	n.walk(func(p rune) {
-		s += string(p)
-	})
-	return s
-}
-
-func (n *node) splice(another *node) {
-	oldnext := n.next
-	n.next = another
-	another.next = oldnext
-}
-
-type rules map[rune]map[rune]rune
+type rules map[string]string
 
 func (r rules) String() string {
 	s := ""
 	for k, v := range r {
-		for k2, v2 := range v {
-			s += fmt.Sprintf("%c%c -> %c\n", k, k2, v2)
-		}
+		s += fmt.Sprintf("%s -> %s\n", k, v)
 	}
 	return s
 }
 
-func (r rules) fire(left, right rune) (rune, bool) {
-	if precond, ok := r[left]; ok {
-		if hit, ok := precond[right]; ok {
-			return hit, true
-		}
+func (r rules) fire(precond string) (string, bool) {
+	if hit, ok := r[precond]; ok {
+		return hit, true
 	}
-	return 0, false
+	return "", false
 }
 
-func (r rules) solve(n *node) {
-	start := n
-	last := start
-	n = n.next
-	for n != nil {
-		if target, ok := r.fire(last.polymer, n.polymer); ok {
-			last.splice(&node{polymer: target})
+func (r rules) solveIteratively(nn string) string {
+	n := nn
+	for i := 1; i < len(n); i++ {
+		if target, ok := r.fire(n[i-1 : i+1]); ok {
+			n = n[:i] + target + n[i:]
+			i += len(target)
 		}
-		last = n
-		n = n.next
 	}
+	return n
+}
+
+type polymer struct {
+	name  string
+	depth int
+}
+
+type polycounts struct {
+	counts map[rune]int64
+}
+
+var cache map[polymer]polycounts
+
+func addcaches(a, b map[rune]int64) map[rune]int64 {
+	res := make(map[rune]int64)
+	for k, v := range a {
+		res[k] += v
+	}
+	for k, v := range b {
+		res[k] += v
+	}
+	return res
+}
+
+func gen(rules map[string]string, cache map[polymer]polycounts, in string, dep int) map[rune]int64 {
+
+	if dep == 40 {
+		return nil
+	}
+	if v, ok := cache[polymer{in, dep}]; ok {
+		return v.counts
+	}
+	if r, ok := rules[in]; ok {
+		left := gen(rules, cache, string(in[0])+r, dep+1)
+		right := gen(rules, cache, r+string(in[1]), dep+1)
+		counts := addcaches(left, right)
+		counts[rune(r[0])]++
+		cache[polymer{in, dep}] = polycounts{counts: counts}
+		return counts
+	}
+	return nil
 }
 
 const MaxInt = int(^uint(0) >> 1)
 
-func (n *node) score() int {
-	singlescores := make(map[rune]int)
+func stringScore(polymers string) int {
+	singlescores := make(map[string]int)
 
-	n.walk(func(p rune) {
-		singlescores[p]++
-	})
+	for _, c := range polymers {
+		singlescores[string(c)]++
+	}
+
 	maxv := 0
 	minv := MaxInt
 	for _, ssc := range singlescores {
@@ -87,33 +98,53 @@ func (n *node) score() int {
 	return maxv - minv
 }
 
-func task1(polymers *node, rules rules) (result int) {
-	for i := 1; i <= 10; i++ {
-		rules.solve(polymers)
-	}
+func solveRecursively(polymers string, rules rules, dep int) int {
+	cache = make(map[polymer]polycounts)
 
-	return polymers.score()
+	c := make(map[rune]int64)
+	for _, v := range polymers {
+		c[v]++
+	}
+	for i := 0; i < len(polymers)-1; i++ {
+		s := gen(rules, cache, polymers[i:i+2], 0)
+		c = addcaches(c, s)
+	}
+	var mx, mi int64 = 0, math.MaxInt64
+	for _, v := range c {
+		if v > mx {
+			mx = v
+		}
+		if v < mi {
+			mi = v
+		}
+	}
+	return int(mx - mi)
 }
 
-func task2(polymers *node, rules rules) (result int) {
-	for i := 1; i <= 40; i++ {
-		fmt.Println(i)
-		rules.solve(polymers)
+func task1(polymers string, rules rules) (result int) {
+	poly := polymers
+	for i := 1; i <= 10; i++ {
+		poly = rules.solveIteratively(poly)
 	}
+	return stringScore(poly)
+}
 
-	return polymers.score()
+func task2(polymers string, rules rules) (result int) {
+	return solveRecursively(polymers, rules, 10)
 }
 
 func main() {
 	input := "input.txt"
 
 	p, r := readdata(input)
+
 	start := time.Now()
 	result := task1(p, r)
 	fmt.Printf("Task 1 - elapsed Time: %s - result \t = %d \n", time.Since(start), result)
 
-	start = time.Now()
-	result = task2(p, r)
-	fmt.Printf("Task 2 - elapsed Time: %s - result \t = %d \n", time.Since(start), result)
+	p, r = readdata(input)
+	start2 := time.Now()
+	result2 := task2(p, r)
+	fmt.Printf("Task 2 - elapsed Time: %s - result \t = %d \n", time.Since(start2), result2)
 
 }
