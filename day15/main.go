@@ -31,13 +31,6 @@ func (c *Cave) String() string {
 	return result
 }
 
-func shorten(i int) int {
-	if i > 9 {
-		return i - 9
-	}
-	return i
-}
-
 func (c *Cave) enlargeCave(factor int) *Cave {
 	nc := &Cave{}
 	nc.dimx = c.dimx * factor
@@ -50,7 +43,7 @@ func (c *Cave) enlargeCave(factor int) *Cave {
 			for xf := 0; xf < factor; xf++ {
 				offsetx := c.dimx * xf
 				for x := 0; x < c.dimx; x++ {
-					v := shorten(c.levels[y][x].value + xf + yf)
+					v := ((c.levels[y][x].value + xf + yf - 1) % 9) + 1
 					nc.levels[y+offsety][x+offsetx] = &Risklevel{x + offsetx, y + offsety, v, nc}
 				}
 			}
