@@ -55,7 +55,7 @@ func (c *Cave) enlargeCave(factor int) *Cave {
 func (r *Risklevel) getAdjacentValues() (levels []astar.Pather) {
 	x := r.x
 	y := r.y
-	dimx := r.cave.dimx //len(r.cave[0])
+	dimx := r.cave.dimx
 	dimy := r.cave.dimy
 	if x > 0 {
 		levels = append(levels, r.cave.levels[y][x-1])
